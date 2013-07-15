@@ -1,4 +1,4 @@
 RestLoli
 ========
 
-Try to provide support for JAX-RS 2.0 Reference Implementation.
+Try to provide support for JAX-RS 1.1 Reference Implementation.
