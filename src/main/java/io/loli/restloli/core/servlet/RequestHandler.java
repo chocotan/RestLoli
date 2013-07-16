@@ -34,6 +34,9 @@ public class RequestHandler {
     public void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String pathInfo = request.getPathInfo();
+        if (pathInfo.endsWith("/")) {
+            pathInfo = pathInfo.substring(0, pathInfo.length() - 1);
+        }
         String httpMethod = request.getMethod();
         // if request url matches method url
         boolean flag = false;
@@ -65,7 +68,8 @@ public class RequestHandler {
             }
         }
         if (!flag) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);;
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            ;
         }
     }
 
