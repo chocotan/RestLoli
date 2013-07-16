@@ -3,7 +3,10 @@ RestLoli
 Try to provide support for JAX-RS 1.1 Reference Implementation.
 
 ###Usage###
-Add these to web.xml and change `<url-pattern>change me</url-pattern>` to anything you like.
+*  Add these to web.xml
+*  Change `<url-pattern>change me</url-pattern>` to anything you like.
+*  Change `<param-value>` to the package your restful classes placed.
+
 ```
 <servlet>
 	<servlet-name>restloli</servlet-name>
