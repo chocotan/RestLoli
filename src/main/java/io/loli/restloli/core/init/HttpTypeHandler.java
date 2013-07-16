@@ -16,23 +16,23 @@ import javax.ws.rs.PUT;
  * 
  */
 public class HttpTypeHandler {
-	public static Map<? extends AnnotationConfig, ? extends Method> handle(
-			Map<AnnotationConfig, Method> map) {
-		for (Entry<AnnotationConfig, Method> entry : map.entrySet()) {
-			Method method = entry.getValue();
-			AnnotationConfig config = entry.getKey();
-			if (method.isAnnotationPresent(GET.class))
-				config.setHttpTypeConfig(new HttpTypeConfig(HttpType.GET));
-			else if (method.isAnnotationPresent(POST.class))
-				config.setHttpTypeConfig(new HttpTypeConfig(HttpType.POST));
-			else if (method.isAnnotationPresent(PUT.class))
-				config.setHttpTypeConfig(new HttpTypeConfig(HttpType.PUT));
-			else if (method.isAnnotationPresent(DELETE.class))
-				config.setHttpTypeConfig(new HttpTypeConfig(HttpType.DELETE));
-			else
-				map.remove(config);
-		}
-		return map;
-	}
+    public static Map<? extends AnnotationConfig, ? extends Method> handle(
+            Map<AnnotationConfig, Method> map) {
+        for (Entry<AnnotationConfig, Method> entry : map.entrySet()) {
+            Method method = entry.getValue();
+            AnnotationConfig config = entry.getKey();
+            if (method.isAnnotationPresent(GET.class))
+                config.setHttpTypeConfig(new HttpTypeConfig(HttpType.GET));
+            else if (method.isAnnotationPresent(POST.class))
+                config.setHttpTypeConfig(new HttpTypeConfig(HttpType.POST));
+            else if (method.isAnnotationPresent(PUT.class))
+                config.setHttpTypeConfig(new HttpTypeConfig(HttpType.PUT));
+            else if (method.isAnnotationPresent(DELETE.class))
+                config.setHttpTypeConfig(new HttpTypeConfig(HttpType.DELETE));
+            else
+                map.remove(config);
+        }
+        return map;
+    }
 
 }

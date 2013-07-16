@@ -16,31 +16,31 @@ import javax.servlet.http.HttpServletResponse;
  * 
  */
 public class LoliEnterServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-	private InitConfig initConfig;
-	private RequestHandler requestHandler;
+    private static final long serialVersionUID = 1L;
+    private InitConfig initConfig;
+    private RequestHandler requestHandler;
 
-	public LoliEnterServlet() {
-		super();
-	}
+    public LoliEnterServlet() {
+        super();
+    }
 
-	/**
-	 * Servlet加载时执行
-	 */
-	@Override
-	public void init(ServletConfig config) {
-		if (initConfig == null) {
-			initConfig = new InitConfig();
-		}
-		initConfig.loadConfig(config);
-	}
+    /**
+     * Servlet加载时执行
+     */
+    @Override
+    public void init(ServletConfig config) {
+        if (initConfig == null) {
+            initConfig = new InitConfig();
+        }
+        initConfig.loadConfig(config);
+    }
 
-	@Override
-	public void service(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		if (requestHandler == null) {
-			requestHandler = new RequestHandler(this.initConfig);
-		}
-		requestHandler.service(request, response);
-	}
+    @Override
+    public void service(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        if (requestHandler == null) {
+            requestHandler = new RequestHandler(this.initConfig);
+        }
+        requestHandler.service(request, response);
+    }
 }

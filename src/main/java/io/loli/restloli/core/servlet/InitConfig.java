@@ -17,50 +17,51 @@ import javax.servlet.ServletConfig;
  * 
  */
 public class InitConfig {
-	// 包名
-	private String packageName;
+    // 包名
+    private String packageName;
 
-	private Map<AnnotationConfig, Method> configMap;
+    private Map<AnnotationConfig, Method> configMap;
 
-	public String getPackageName() {
-		return packageName;
-	}
+    public String getPackageName() {
+        return packageName;
+    }
 
-	public void setPackageName(String packageName) {
-		this.packageName = packageName;
-	}
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
+    }
 
-	/**
-	 * 加载config
-	 * 
-	 * @param config
-	 * @throws InitConfigException
-	 *             当没有获取到正确的参数时, 会抛出异常
-	 */
-	public void loadConfig(ServletConfig config) {
-		packageName = config
-				.getInitParameter("io.loli.restloli.core.init.PackageName");
-		if (packageName != null && packageName != "") {
-			this.loadPackage(packageName);
-		} else {
-			throw new InitConfigException("ServletConfig 加载错误, 请检查web.xml");
-		}
-	}
+    /**
+     * 加载config
+     * 
+     * @param config
+     * @throws InitConfigException
+     *             当没有获取到正确的参数时, 会抛出异常
+     */
+    public void loadConfig(ServletConfig config) {
+        packageName = config
+                .getInitParameter("io.loli.restloli.core.init.PackageName");
+        if (packageName != null && packageName != "") {
+            this.loadPackage(packageName);
+        } else {
+            throw new InitConfigException("ServletConfig 加载错误, 请检查web.xml");
+        }
+    }
 
-	/**
-	 * 加载指定包中的类并生成配置map
-	 * @param packageName
-	 */
-	private void loadPackage(String packageName) {
-		Set<Class<?>> classes = LoliClassLoader.getClasses(packageName);
-		this.configMap = new AnnotationTypeHandler().handle(classes);
-	}
+    /**
+     * 加载指定包中的类并生成配置map
+     * 
+     * @param packageName
+     */
+    private void loadPackage(String packageName) {
+        Set<Class<?>> classes = LoliClassLoader.getClasses(packageName);
+        this.configMap = new AnnotationTypeHandler().handle(classes);
+    }
 
-	public Map<AnnotationConfig, Method> getConfigMap() {
-		return configMap;
-	}
+    public Map<AnnotationConfig, Method> getConfigMap() {
+        return configMap;
+    }
 
-	public void setConfigMap(Map<AnnotationConfig, Method> configMap) {
-		this.configMap = configMap;
-	}
+    public void setConfigMap(Map<AnnotationConfig, Method> configMap) {
+        this.configMap = configMap;
+    }
 }
