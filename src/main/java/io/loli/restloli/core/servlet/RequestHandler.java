@@ -35,6 +35,8 @@ public class RequestHandler {
             throws ServletException, IOException {
         String pathInfo = request.getPathInfo();
         String httpMethod = request.getMethod();
+        // if request url matches method url
+        boolean flag = false;
         for (Entry<AnnotationConfig, Method> entry : configMap.entrySet()) {
             AnnotationConfig config = entry.getKey();
             Method method = entry.getValue();
@@ -42,6 +44,9 @@ public class RequestHandler {
             if (config.getPathConfig().getPath().equals(pathInfo)
                     && config.getHttpTypeConfig().getHttpType().toString()
                             .equals(httpMethod)) {
+                if (!flag) {
+                    flag = true;
+                }
                 Object responseObj = null;
                 try {
                     responseObj = method.invoke(method.getDeclaringClass()
@@ -58,6 +63,9 @@ public class RequestHandler {
             } else {
                 continue;
             }
+        }
+        if (!flag) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);;
         }
     }
 

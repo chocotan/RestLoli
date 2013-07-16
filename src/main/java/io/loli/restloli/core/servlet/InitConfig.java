@@ -50,7 +50,7 @@ public class InitConfig {
     /**
      * 加载指定包中的类并生成配置map
      * 
-     * @param packageName
+     * @param packageName 包名
      */
     private void loadPackage(String packageName) {
         Set<Class<?>> classes = LoliClassLoader.getClasses(packageName);

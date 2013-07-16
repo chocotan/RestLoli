@@ -34,8 +34,7 @@ public class PathHandler {
                     try {
                         path = method.getAnnotation(Path.class).value();
                     } catch (NullPointerException e) {
-                        // e.printStackTrace();
-                        continue;
+                        path = "";
                     }
                     path = filterPath(path);
                     String fullPath = rootPath.concat(path);
