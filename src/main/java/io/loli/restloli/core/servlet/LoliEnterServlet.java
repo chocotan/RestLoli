@@ -1,7 +1,5 @@
 package io.loli.restloli.core.servlet;
 
-import io.loli.restloli.core.handle.RequestHandler;
-
 import java.io.IOException;
 
 import javax.servlet.ServletConfig;

@@ -1,7 +1,6 @@
-package io.loli.restloli.core.handle;
+package io.loli.restloli.core.servlet;
 
 import io.loli.restloli.core.init.AnnotationConfig;
-import io.loli.restloli.core.servlet.InitConfig;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
