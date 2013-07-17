@@ -1,11 +1,18 @@
 package io.loli.restloli.core.init;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 
 /**
  * 从class中读取path配置并写入配置map
@@ -33,13 +40,21 @@ public class PathHandler {
                 if (method.getAnnotations().length > 0) {
                     try {
                         path = method.getAnnotation(Path.class).value();
-                    } catch (NullPointerException e) {
-                        path = "";
+                    } catch (Exception e) {
+                        continue;
                     }
+                    String tempP = new String(path);
                     path = filterPath(path);
+                    path = removeParam(path);
                     String fullPath = rootPath.concat(path);
+                    PathConfig pathConfig = new PathConfig(fullPath);
+                    Set<String> params = findParamsByPath(tempP);
+                    pathConfig.setParams(params);
+                    if (params.size() > 0){
+                        pathConfig.setArgs(generateArgs(method));
+                    }
                     map.put(new AnnotationConfig()
-                            .setPathConfig(new PathConfig(fullPath)), method);
+                            .setPathConfig(pathConfig), method);
                 }
             }
         }
@@ -64,20 +79,40 @@ public class PathHandler {
                 rootPath = filterPath(rootPath);
 
                 String path = method.getAnnotation(Path.class).value();
+
                 if (path == null) {
                     configMap.put(new AnnotationConfig()
                             .setPathConfig(new PathConfig(path)), method);
                 } else if (method.getAnnotations().length > 0) {
                     path = filterPath(path);
+                    String tempP = new String(path);
+                    path = removeParam(path);
                     String fullPath = rootPath.concat(path);
+                    PathConfig pathConfig = new PathConfig(fullPath);
+                    Set<String> params = findParamsByPath(tempP);
+                    pathConfig.setParams(params);
+                    if (params.size() > 0)
+                        pathConfig.setArgs(generateArgs(method));
                     AnnotationConfig config = entry.getKey();
+
                     configMap.remove(config);
-                    configMap.put(new AnnotationConfig()
-                            .setPathConfig(new PathConfig(fullPath)), method);
+                    configMap.put(
+                            new AnnotationConfig().setPathConfig(pathConfig),
+                            method);
                 }
             }
         }
         return configMap;
+    }
+
+    /**
+     * 去除带{}的参数并用正则表达式替代
+     * 
+     * @param path
+     * @return
+     */
+    public static String removeParam(String path) {
+        return path.replaceAll("\\{[a-zA-Z0-9]+\\}", "([a-zA-Z0-9]+)");
     }
 
     /**
@@ -96,5 +131,43 @@ public class PathHandler {
             path = path.substring(0, path.length() - 1);
         }
         return path;
+    }
+
+    /**
+     * 获取一个方法@Path注解中的参数
+     * 
+     * @param path
+     * @return
+     */
+    private static Set<String> findParamsByPath(String path) {
+        Pattern p = Pattern.compile("\\{.*\\}");
+        Matcher m = p.matcher(path);
+        Set<String> set = new TreeSet<String>();
+        while (m.find()) {
+            String param = m.group();
+            set.add(param);
+        }
+        return set;
+    }
+
+    /**
+     * 获取一个method的带@PathParam注解的参数信息
+     * 
+     * @param method
+     * @return
+     */
+    private static Map<String, Class<?>> generateArgs(Method method) {
+        final Annotation[][] paramAnnotations = method
+                .getParameterAnnotations();
+        final Class<?>[] paramTypes = method.getParameterTypes();
+        Map<String, Class<?>> map = new TreeMap<String, Class<?>>();
+        for (int i = 0; i < paramAnnotations.length; i++) {
+            for (Annotation a : paramAnnotations[i]) {
+                if (a instanceof PathParam) {
+                    map.put(((PathParam) a).value(), paramTypes[i]);
+                }
+            }
+        }
+        return map;
     }
 }

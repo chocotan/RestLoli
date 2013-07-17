@@ -4,8 +4,24 @@
 	<groupId>io.loli</groupId>
 	<artifactId>restloli</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
 	<name>RestLoli</name>
 	<description>Try to provide support for JAX-RS 1.1 Reference Implementation.</description>
+	<url>https://github.com/chocotan/RestLoli</url>
+
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<scm>
+		<connection>scm:git@github.com:chocotan/RestLoli.git</connection>
+		<url>scm:git@github.com:chocotan/RestLoli.git</url>
+		<developerConnection>scm:git@github.com:chocotan/RestLoli.git</developerConnection>
+	</scm>
 	<dependencies>
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -25,8 +41,21 @@
 		</dependency>
 	</dependencies>
 
+	<distributionManagement>
+		<!-- Repository for snapshots -->
+		<snapshotRepository>
+			<id>sonatype-nexus-snapshots</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<!-- Repository for releases -->
+		<repository>
+			<id>nexus-releases</id>
+			<name>Nexus Release Repository</name>
+			<url>http://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
 	<build>
-		<finalName>io.loli.newspub.ywl</finalName>
+		<finalName>io.loli.restloli</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -47,6 +76,21 @@
 					<source>1.7</source>
 					<target>1.7</target>
 				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.1</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
