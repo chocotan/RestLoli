@@ -3,13 +3,26 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.loli</groupId>
 	<artifactId>restloli</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1-RELEASE</version>
 	<packaging>jar</packaging>
 
 	<name>RestLoli</name>
 	<description>Try to provide support for JAX-RS 1.1 Reference Implementation.</description>
 	<url>https://github.com/chocotan/RestLoli</url>
-
+	<developers>
+		<developer>
+			<id>choco</id>
+			<name>chocotan</name>
+			<email>uzumakitenye@gmail.com</email>
+			<url>http://loli.io</url>
+			<organization>Rontech.co.jp</organization>
+			<organizationUrl>http://www.rontech.co.jp</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>+8</timezone>
+		</developer>
+	</developers>
 	<licenses>
 		<license>
 			<name>The Apache Software License, Version 2.0</name>
@@ -22,6 +35,7 @@
 		<url>scm:git@github.com:chocotan/RestLoli.git</url>
 		<developerConnection>scm:git@github.com:chocotan/RestLoli.git</developerConnection>
 	</scm>
+
 	<dependencies>
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -77,7 +91,30 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
-
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-gpg-plugin</artifactId>
