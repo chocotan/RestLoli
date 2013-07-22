@@ -1,4 +1,4 @@
-package io.loli.restloli.core.init;
+package io.loli.restloli.core.servlet.config;
 
 import javax.ws.rs.HttpMethod;
 

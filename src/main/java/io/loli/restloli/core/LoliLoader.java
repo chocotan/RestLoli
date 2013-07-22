@@ -16,7 +16,7 @@ import java.util.jar.JarFile;
 
 import javax.ws.rs.Path;
 
-public class LoliClassLoader {
+public class LoliLoader {
 
     /**
      * 从包package中获取所有的Class

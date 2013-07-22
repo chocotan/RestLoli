@@ -1,8 +1,8 @@
 package io.loli.restloli.core.servlet;
 
-import io.loli.restloli.core.LoliClassLoader;
-import io.loli.restloli.core.init.AnnotationConfig;
-import io.loli.restloli.core.init.AnnotationTypeHandler;
+import io.loli.restloli.core.LoliLoader;
+import io.loli.restloli.core.servlet.config.AnnotationConfig;
+import io.loli.restloli.core.servlet.config.ConfigLoader;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -16,7 +16,7 @@ import javax.servlet.ServletConfig;
  * @author choco
  * 
  */
-public class InitConfig {
+public class LoliConfig {
     // 包名
     private String packageName;
 
@@ -43,18 +43,19 @@ public class InitConfig {
         if (packageName != null && packageName != "") {
             this.loadPackage(packageName);
         } else {
-            throw new InitConfigException("ServletConfig 加载错误, 请检查web.xml");
+            System.err.println("web.xml load error");
         }
     }
 
     /**
      * 加载指定包中的类并生成配置map
      * 
-     * @param packageName 包名
+     * @param packageName
+     *            包名
      */
     private void loadPackage(String packageName) {
-        Set<Class<?>> classes = LoliClassLoader.getClasses(packageName);
-        this.configMap = new AnnotationTypeHandler().handle(classes);
+        Set<Class<?>> classes = LoliLoader.getClasses(packageName);
+        this.configMap = new ConfigLoader(classes).load();
     }
 
     public Map<AnnotationConfig, Method> getConfigMap() {

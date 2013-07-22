@@ -21,8 +21,8 @@ Try to provide support for JAX-RS 1.1 Reference Implementation.
 
 ```
 <servlet>
-	<servlet-name>restloli</servlet-name>
-	<servlet-class>io.loli.restloli.core.servlet.LoliEnterServlet</servlet-class>
+  <servlet-name>restloli</servlet-name>
+  <servlet-class>io.loli.restloli.core.servlet.LoliServlet</servlet-class>
   <init-param>
     <param-name>io.loli.restloli.core.init.PackageName</param-name>
     <param-value>io.loli.restloli.core.servlet</param-value>
