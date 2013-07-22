@@ -1,4 +1,4 @@
-package io.loli.restloli.core.init;
+package io.loli.restloli.core.servlet.config;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -20,14 +20,14 @@ import javax.ws.rs.PathParam;
  * @author choco
  * 
  */
-public class PathHandler {
+public class PathWrapper implements ConfigWrapper{
     /**
      * 读取单个类获取配置
      * 
      * @param clazz
      * @return 配置map
      */
-    public static Map<? extends AnnotationConfig, ? extends Method> handle(
+    public Map<? extends AnnotationConfig, ? extends Method> wrap(
             Class<?> clazz) {
         String rootPath = clazz.getAnnotation(Path.class).value();
         Map<AnnotationConfig, Method> map = new HashMap<AnnotationConfig, Method>();
@@ -67,7 +67,8 @@ public class PathHandler {
      * @param configMap
      * @return
      */
-    public static Map<? extends AnnotationConfig, ? extends Method> handle(
+    @Override
+    public Map<? extends AnnotationConfig, ? extends Method> wrap(
             Map<AnnotationConfig, Method> configMap) {
         for (Entry<AnnotationConfig, Method> entry : configMap.entrySet()) {
             Method method = entry.getValue();

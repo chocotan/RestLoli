@@ -1,4 +1,4 @@
-package io.loli.restloli.core.init;
+package io.loli.restloli.core.servlet.config;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -15,9 +15,9 @@ import javax.ws.rs.PUT;
  * @author choco
  * 
  */
-public class HttpTypeHandler {
-    public static Map<? extends AnnotationConfig, ? extends Method> handle(
-            Map<AnnotationConfig, Method> map) {
+public class HttpTypeWrapper implements ConfigWrapper {
+    @Override
+    public Map<AnnotationConfig, Method> wrap(Map<AnnotationConfig, Method> map) {
         for (Entry<AnnotationConfig, Method> entry : map.entrySet()) {
             Method method = entry.getValue();
             AnnotationConfig config = entry.getKey();

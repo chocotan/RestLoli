@@ -1,5 +1,7 @@
 package io.loli.restloli.core.servlet;
 
+import io.loli.restloli.core.servlet.response.RequestGenerator;
+
 import java.io.IOException;
 
 import javax.servlet.ServletConfig;
@@ -15,12 +17,12 @@ import javax.servlet.http.HttpServletResponse;
  * @author choco
  * 
  */
-public class LoliEnterServlet extends HttpServlet {
+public class LoliServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private InitConfig initConfig;
-    private RequestHandler requestHandler;
+    private LoliConfig loliConfig;
+    private RequestGenerator requestHandler;
 
-    public LoliEnterServlet() {
+    public LoliServlet() {
         super();
     }
 
@@ -29,17 +31,17 @@ public class LoliEnterServlet extends HttpServlet {
      */
     @Override
     public void init(ServletConfig config) {
-        if (initConfig == null) {
-            initConfig = new InitConfig();
+        if (loliConfig == null) {
+            loliConfig = new LoliConfig();
         }
-        initConfig.loadConfig(config);
+        loliConfig.loadConfig(config);
     }
 
     @Override
     public void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         if (requestHandler == null) {
-            requestHandler = new RequestHandler(this.initConfig);
+            requestHandler = new RequestGenerator(this.loliConfig);
         }
         requestHandler.service(request, response);
     }

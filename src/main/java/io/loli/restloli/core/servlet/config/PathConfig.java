@@ -1,4 +1,4 @@
-package io.loli.restloli.core.init;
+package io.loli.restloli.core.servlet.config;
 
 import java.util.Map;
 import java.util.Set;

@@ -1,6 +1,7 @@
-package io.loli.restloli.core.servlet;
+package io.loli.restloli.core.servlet.response;
 
-import io.loli.restloli.core.init.AnnotationConfig;
+import io.loli.restloli.core.servlet.LoliConfig;
+import io.loli.restloli.core.servlet.config.AnnotationConfig;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -22,10 +23,10 @@ import javax.servlet.http.HttpServletResponse;
  * @author choco
  * 
  */
-public class RequestHandler {
+public class RequestGenerator {
     private Map<AnnotationConfig, Method> configMap;
 
-    public RequestHandler(InitConfig initConfig) {
+    public RequestGenerator(LoliConfig initConfig) {
         this.configMap = initConfig.getConfigMap();
     }
 
@@ -98,7 +99,6 @@ public class RequestHandler {
         }
         if (!flag) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
-            ;
         }
     }
 
