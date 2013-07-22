@@ -2,7 +2,8 @@ RestLoli
 ========
 Try to provide support for JAX-RS 1.1 Reference Implementation.
 
-###Restloli has bean published to the Central Repository###
+###Maven###
+*  Restloli has bean published to the Central Repository
 *  The latest version is 0.0.1
 
 ```
