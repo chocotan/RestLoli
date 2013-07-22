@@ -22,3 +22,6 @@ Try to provide support for JAX-RS 1.1 Reference Implementation.
   <url-pattern>/rest/*</url-pattern>
 </servlet-mapping>
 ```
+###LICENSE###
+This project is under the MIT license.
+See [LICENSE](https://github.com/chocotan/RestLoli/blob/master/LICENSE,'LICENSE') for more information.
