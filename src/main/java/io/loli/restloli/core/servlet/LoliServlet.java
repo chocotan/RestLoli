@@ -1,6 +1,6 @@
 package io.loli.restloli.core.servlet;
 
-import io.loli.restloli.core.servlet.response.RequestGenerator;
+import io.loli.restloli.core.servlet.response.ResponseGenerator;
 
 import java.io.IOException;
 
@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 public class LoliServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private LoliConfig loliConfig;
-    private RequestGenerator requestHandler;
+    private ResponseGenerator requestGenerator;
 
     public LoliServlet() {
         super();
@@ -40,9 +40,9 @@ public class LoliServlet extends HttpServlet {
     @Override
     public void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        if (requestHandler == null) {
-            requestHandler = new RequestGenerator(this.loliConfig);
+        if (requestGenerator == null) {
+            requestGenerator = new ResponseGenerator(this.loliConfig);
         }
-        requestHandler.service(request, response);
+        requestGenerator.service(request, response);
     }
 }
