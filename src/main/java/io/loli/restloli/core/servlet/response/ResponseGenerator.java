@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * 澶勭悊request鐨勭被
+ * 处理request的类
  * 
  * @author choco
  * 
