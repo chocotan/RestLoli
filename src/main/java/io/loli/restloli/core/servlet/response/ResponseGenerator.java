@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -44,12 +45,30 @@ public class ResponseGenerator {
                 .entrySet()) {
             Class<?> clazz = entry.getValue();
             String paramName = entry.getKey();
-            if (config.getPathConfig().getParams()
+            Iterator<String> itr = config.getPathConfig().getParams().iterator();
+            while(itr.hasNext()){
+                if(itr.next().contains("{" + paramName + "}")){
+                    String paramValue = params[index];
+                    Object obj = null;
+                    if (clazz == String.class) {
+                        obj = paramValue;
+                    } else if (clazz == int.class || clazz == Integer.class) {
+                        obj = Integer.parseInt(paramValue);
+                    }
+                    list.add(obj);
+                }
+            }
+            /*if (config.getPathConfig().getParams()
                     .contains("{" + paramName + "}")) {
                 String paramValue = params[index];
-                Class.class.cast(Class.forName(clazz.getName()));
-                list.add((Class.forName(clazz.getName())).newInstance());
-            }
+                Object obj = null;
+                if (clazz == String.class) {
+                    obj = paramValue;
+                } else if (clazz == int.class || clazz == Integer.class) {
+                    obj = Integer.parseInt(paramValue);
+                }
+                list.add(obj);
+            }*/
             index++;
         }
         return list.toArray();
@@ -62,16 +81,27 @@ public class ResponseGenerator {
             Matcher m = Pattern.compile(config.getPathConfig().getPath())
                     .matcher(pathInfo);
             if (!config.getPathConfig().getPath().contains("([a-zA-Z0-9]+)")) {
-                params.add(m.group());
-                return (String[]) params.toArray();
+                // params.add(config.getPathConfig().getPath());
+                if (m.matches()) {
+                    this.currentRequestConfigEntry = entry;
+                    return params.toArray(new String[params.size()]);
+                } else {
+                    continue;
+                }
+                // m.matches()会对m.find()的结果有影响
+            } else if (m.find()) {
+                for (int i = 1; i <= m.groupCount()
+                        && config.getHttpTypeConfig().getHttpType().toString()
+                                .equals(httpMethod); i++) {
+                    this.currentRequestConfigEntry = entry;
+                    params.add(m.group(i));
+                }
+                return params.toArray(new String[params.size()]);
+
+            } else {
+                continue;
             }
-            for (int i = 1; m.find()
-                    && config.getHttpTypeConfig().getHttpType().toString()
-                            .equals(httpMethod); i++) {
-                this.currentRequestConfigEntry = entry;
-                params.add(m.group(i));
-            }
-            return (String[]) params.toArray();
+
         }
         return null;
     }
@@ -107,9 +137,9 @@ public class ResponseGenerator {
         is404 = entry == null;
         if (!is404) {
             Method method = entry.getValue();
-
-            Object responseObj = invokeMethod(method,
-                    this.generateMethodParams(request, entry.getKey(), params));
+            Object[] objs = this.generateMethodParams(request, entry.getKey(), params);
+            Object responseObj = invokeMethod(method,objs
+                    );
             this.doResponse(request, response, responseObj);
         } else {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
