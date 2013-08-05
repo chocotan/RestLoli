@@ -5,6 +5,7 @@ Try to provide support for JAX-RS 1.1 Reference Implementation.
 
 ###Build###
 [![Build Status](https://drone.io/github.com/chocotan/RestLoli/status.png)](https://drone.io/github.com/chocotan/RestLoli/latest)
+
 [![Build Status](https://buildhive.cloudbees.com/job/chocotan/job/RestLoli/badge/icon)](https://buildhive.cloudbees.com/job/chocotan/job/RestLoli/)
 
 
