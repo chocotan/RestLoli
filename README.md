@@ -1,4 +1,4 @@
-RestLoli
+RestLoli ![build1](https://drone.io/github.com/chocotan/RestLoli/status.png)
 ========
 Try to provide support for JAX-RS 1.1 Reference Implementation.
 
