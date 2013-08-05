@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -32,50 +33,75 @@ public class ResponseGenerator {
         this.configMap = initConfig.getConfigMap();
     }
 
-    public Object[] generateMethodParams(HttpServletRequest request,
-            AnnotationConfig config, String paramValue) {
+    private Object[] generateMethodParams(HttpServletRequest request,
+            AnnotationConfig config, String[] params) {
         List<Object> list = new ArrayList<Object>();
         if (config.getPathConfig().getArgs() == null) {
             return new Object[] {};
         }
 
+        int index = 0;
         for (Entry<String, Class<?>> entry : config.getPathConfig().getArgs()
                 .entrySet()) {
             Class<?> clazz = entry.getValue();
             String paramName = entry.getKey();
-            if (config.getPathConfig().getParams()
-                    .contains("{" + paramName + "}")) {
-                try {
-                    if (clazz.newInstance() instanceof String) {
-                        list.add(paramValue);
-                    } else {
-                        list.add(Double.valueOf(paramValue));
+            Iterator<String> itr = config.getPathConfig().getParams().iterator();
+            while(itr.hasNext()){
+                if(itr.next().contains("{" + paramName + "}")){
+                    String paramValue = params[index];
+                    Object obj = null;
+                    if (clazz == String.class) {
+                        obj = paramValue;
+                    } else if (clazz == int.class || clazz == Integer.class) {
+                        obj = Integer.parseInt(paramValue);
                     }
-                } catch (InstantiationException | IllegalAccessException e) {
-                    e.printStackTrace();
+                    list.add(obj);
                 }
             }
+            /*if (config.getPathConfig().getParams()
+                    .contains("{" + paramName + "}")) {
+                String paramValue = params[index];
+                Object obj = null;
+                if (clazz == String.class) {
+                    obj = paramValue;
+                } else if (clazz == int.class || clazz == Integer.class) {
+                    obj = Integer.parseInt(paramValue);
+                }
+                list.add(obj);
+            }*/
+            index++;
         }
         return list.toArray();
     }
 
-    private String getMethodParam(String pathInfo, String httpMethod) {
+    private String[] getMethodParam(String pathInfo, String httpMethod) {
+        List<String> params = new ArrayList<String>();
         for (Entry<AnnotationConfig, Method> entry : configMap.entrySet()) {
             AnnotationConfig config = entry.getKey();
             Matcher m = Pattern.compile(config.getPathConfig().getPath())
                     .matcher(pathInfo);
-            if (m.find()
-                    && config.getHttpTypeConfig().getHttpType().toString()
-                            .equals(httpMethod)) {
-                this.currentRequestConfigEntry = entry;
-                if (!config.getPathConfig().getPath()
-                        .contains("([a-zA-Z0-9]+)")) {
-                    return m.group();
+            if (!config.getPathConfig().getPath().contains("([a-zA-Z0-9]+)")) {
+                // params.add(config.getPathConfig().getPath());
+                if (m.matches()) {
+                    this.currentRequestConfigEntry = entry;
+                    return params.toArray(new String[params.size()]);
+                } else {
+                    continue;
                 }
-                return m.group(1);
+                // m.matches()会对m.find()的结果有影响
+            } else if (m.find()) {
+                for (int i = 1; i <= m.groupCount()
+                        && config.getHttpTypeConfig().getHttpType().toString()
+                                .equals(httpMethod); i++) {
+                    this.currentRequestConfigEntry = entry;
+                    params.add(m.group(i));
+                }
+                return params.toArray(new String[params.size()]);
+
             } else {
                 continue;
             }
+
         }
         return null;
     }
@@ -105,16 +131,15 @@ public class ResponseGenerator {
         String pathInfo = getPathInfo(request);
         String httpMethod = request.getMethod();
         // if request url matches method url
-        String paramValue = this.getMethodParam(pathInfo, httpMethod);
-        is404 = paramValue == null;
+        String[] params = this.getMethodParam(pathInfo, httpMethod);
+        is404 = params == null;
         Entry<AnnotationConfig, Method> entry = this.currentRequestConfigEntry;
         is404 = entry == null;
         if (!is404) {
             Method method = entry.getValue();
-
-            Object responseObj = invokeMethod(method,
-                    this.generateMethodParams(request, entry.getKey(),
-                            paramValue));
+            Object[] objs = this.generateMethodParams(request, entry.getKey(), params);
+            Object responseObj = invokeMethod(method,objs
+                    );
             this.doResponse(request, response, responseObj);
         } else {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
