@@ -20,6 +20,13 @@ Try to provide support for JAX-RS 1.1 Reference Implementation.
     <version>0.0.2-RELEASE</version>
 </dependency>
 ```
+If you want to build from the source of the latest version, use the following command ,
+
+```
+git clone git@github.com:chocotan/RestLoli.git
+cd RestLoli
+maven clean install
+```
 
 ###Usage###
 *  Add these to web.xml
