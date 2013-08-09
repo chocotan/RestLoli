@@ -25,7 +25,7 @@ If you want to build from the source of the latest version, use the following co
 ```
 git clone git@github.com:chocotan/RestLoli.git
 cd RestLoli
-maven clean install
+mvn clean install
 ```
 
 ###Usage###
