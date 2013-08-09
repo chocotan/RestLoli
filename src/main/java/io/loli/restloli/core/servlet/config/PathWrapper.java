@@ -1,7 +1,10 @@
 package io.loli.restloli.core.servlet.config;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -20,15 +23,14 @@ import javax.ws.rs.PathParam;
  * @author choco
  * 
  */
-public class PathWrapper implements ConfigWrapper{
+public class PathWrapper implements ConfigWrapper {
     /**
      * 读取单个类获取配置
      * 
      * @param clazz
      * @return 配置map
      */
-    public Map<? extends AnnotationConfig, ? extends Method> wrap(
-            Class<?> clazz) {
+    public Map<? extends AnnotationConfig, ? extends Method> wrap(Class<?> clazz) {
         String rootPath = clazz.getAnnotation(Path.class).value();
         Map<AnnotationConfig, Method> map = new HashMap<AnnotationConfig, Method>();
         if (rootPath == null) {
@@ -50,11 +52,11 @@ public class PathWrapper implements ConfigWrapper{
                     PathConfig pathConfig = new PathConfig(fullPath);
                     Set<String> params = findParamsByPath(tempP);
                     pathConfig.setParams(params);
-                    if (params.size() > 0){
+                    if (params.size() > 0) {
                         pathConfig.setArgs(generateArgs(method));
                     }
-                    map.put(new AnnotationConfig()
-                            .setPathConfig(pathConfig), method);
+                    map.put(new AnnotationConfig().setPathConfig(pathConfig),
+                            method);
                 }
             }
         }
@@ -152,10 +154,50 @@ public class PathWrapper implements ConfigWrapper{
     }
 
     /**
+     * 判断一个String是否已经被编码过
+     * 
+     * @param oldurl
+     * @return 如果被编码过则返回true 没有则返回false
+     * @throws UnsupportedEncodingException
+     */
+    private static boolean isEncoded(String oldurl)
+            throws UnsupportedEncodingException {
+        return URLDecoder.decode(oldurl, "UTF-8").equals(oldurl) ? false : true;
+    }
+
+    /**
+     * 给一个String进行编码
+     * 
+     * @param oldurl
+     *            需要编码的url
+     * @return 编码后的url
+     */
+    private static String encode(String oldurl) {
+        try {
+            if (isEncoded(oldurl)) {
+                return oldurl;
+            }
+        } catch (UnsupportedEncodingException e1) {
+            e1.printStackTrace();
+        }
+        // Add support for url encoding
+        String finalvalue = null;
+        try {
+            // Use utf-8 for encoding
+            finalvalue = URLEncoder.encode(oldurl, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } finally {
+            finalvalue = oldurl;
+        }
+        return finalvalue;
+    }
+
+    /**
      * 获取一个method的带@PathParam注解的参数信息
      * 
      * @param method
-     * @return
+     * @return 配置map
      */
     private static Map<String, Class<?>> generateArgs(Method method) {
         final Annotation[][] paramAnnotations = method
@@ -165,7 +207,11 @@ public class PathWrapper implements ConfigWrapper{
         for (int i = 0; i < paramAnnotations.length; i++) {
             for (Annotation a : paramAnnotations[i]) {
                 if (a instanceof PathParam) {
-                    map.put(((PathParam) a).value(), paramTypes[i]);
+                    // Add support for url encoding
+                    String pathvalue = ((PathParam) a).value();
+                    String finalvalue = encode(pathvalue);
+                    // Put the encoded string into map
+                    map.put(finalvalue, paramTypes[i]);
                 }
             }
         }

@@ -45,9 +45,10 @@ public class ResponseGenerator {
                 .entrySet()) {
             Class<?> clazz = entry.getValue();
             String paramName = entry.getKey();
-            Iterator<String> itr = config.getPathConfig().getParams().iterator();
-            while(itr.hasNext()){
-                if(itr.next().contains("{" + paramName + "}")){
+            Iterator<String> itr = config.getPathConfig().getParams()
+                    .iterator();
+            while (itr.hasNext()) {
+                if (itr.next().contains("{" + paramName + "}")) {
                     String paramValue = params[index];
                     Object obj = null;
                     if (clazz == String.class) {
@@ -58,17 +59,13 @@ public class ResponseGenerator {
                     list.add(obj);
                 }
             }
-            /*if (config.getPathConfig().getParams()
-                    .contains("{" + paramName + "}")) {
-                String paramValue = params[index];
-                Object obj = null;
-                if (clazz == String.class) {
-                    obj = paramValue;
-                } else if (clazz == int.class || clazz == Integer.class) {
-                    obj = Integer.parseInt(paramValue);
-                }
-                list.add(obj);
-            }*/
+            /*
+             * if (config.getPathConfig().getParams() .contains("{" + paramName
+             * + "}")) { String paramValue = params[index]; Object obj = null;
+             * if (clazz == String.class) { obj = paramValue; } else if (clazz
+             * == int.class || clazz == Integer.class) { obj =
+             * Integer.parseInt(paramValue); } list.add(obj); }
+             */
             index++;
         }
         return list.toArray();
@@ -107,7 +104,8 @@ public class ResponseGenerator {
     }
 
     private String getPathInfo(HttpServletRequest request) {
-        String pathInfo = request.getPathInfo();
+        // Get the encoded url
+        String pathInfo = request.getRequestURI();
         if (pathInfo.endsWith("/")) {
             pathInfo = pathInfo.substring(0, pathInfo.length() - 1);
         }
@@ -137,9 +135,9 @@ public class ResponseGenerator {
         is404 = entry == null;
         if (!is404) {
             Method method = entry.getValue();
-            Object[] objs = this.generateMethodParams(request, entry.getKey(), params);
-            Object responseObj = invokeMethod(method,objs
-                    );
+            Object[] objs = this.generateMethodParams(request, entry.getKey(),
+                    params);
+            Object responseObj = invokeMethod(method, objs);
             this.doResponse(request, response, responseObj);
         } else {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
