@@ -3,7 +3,7 @@ RestLoli
 Try to provide support for JAX-RS 1.1 Reference Implementation.
 
 
-###Build###
+###Build Status###
 [![Build Status](https://drone.io/github.com/chocotan/RestLoli/status.png)](https://drone.io/github.com/chocotan/RestLoli/latest)
 
 [![Build Status](https://buildhive.cloudbees.com/job/chocotan/job/RestLoli/badge/icon)](https://buildhive.cloudbees.com/job/chocotan/job/RestLoli/)
@@ -41,6 +41,6 @@ Try to provide support for JAX-RS 1.1 Reference Implementation.
   <url-pattern>/rest/*</url-pattern>
 </servlet-mapping>
 ```
-###LICENSE###
+###License###
 This project is under the MIT license.
 See [LICENSE](https://github.com/chocotan/RestLoli/blob/master/LICENSE) for more information.
