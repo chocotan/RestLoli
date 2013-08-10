@@ -1,7 +1,6 @@
 package io.loli.restloli.core.servlet.config;
 
 import java.util.Map;
-import java.util.Set;
 
 /**
  * path的配置类
@@ -11,7 +10,7 @@ import java.util.Set;
  */
 public class PathConfig {
     private String path;
-    private Set<String> params;
+    private Map<String,String> params;
 
     private Map<String,Class<?>> args;
     public PathConfig() {
@@ -34,11 +33,11 @@ public class PathConfig {
         return path;
     }
 
-    public Set<String> getParams() {
+    public Map<String,String> getParams() {
         return params;
     }
 
-    public void setParams(Set<String> params) {
+    public void setParams(Map<String,String> params) {
         this.params = params;
     }
 

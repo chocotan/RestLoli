@@ -4,13 +4,10 @@ import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,7 +33,7 @@ public class PathWrapper implements ConfigWrapper {
         if (rootPath == null) {
             throw new NullPointerException("path不能为空");
         } else {
-            rootPath = filterPath(rootPath);
+            rootPath = filterRootPath(rootPath);
             for (Method method : clazz.getDeclaredMethods()) {
                 String path = null;
                 if (method.getAnnotations().length > 0) {
@@ -49,8 +46,9 @@ public class PathWrapper implements ConfigWrapper {
                     path = filterPath(path);
                     path = removeParam(path);
                     String fullPath = rootPath.concat(path);
+                    fullPath = decode(fullPath);
                     PathConfig pathConfig = new PathConfig(fullPath);
-                    Set<String> params = findParamsByPath(tempP);
+                    Map<String, String> params = findParamsByPath(tempP);
                     pathConfig.setParams(params);
                     if (params.size() > 0) {
                         pathConfig.setArgs(generateArgs(method));
@@ -61,6 +59,18 @@ public class PathWrapper implements ConfigWrapper {
             }
         }
         return map;
+    }
+
+    private String filterRootPath(String path) {
+        if (path.length() == 0)
+            return path;
+        if (path.charAt(0) != '/') {
+            path = "/".concat(path);
+        }
+        if (path.charAt(path.length() - 1) == '/') {
+            path = path.substring(0, path.length() - 1);
+        }
+        return path;
     }
 
     /**
@@ -87,12 +97,13 @@ public class PathWrapper implements ConfigWrapper {
                     configMap.put(new AnnotationConfig()
                             .setPathConfig(new PathConfig(path)), method);
                 } else if (method.getAnnotations().length > 0) {
-                    path = filterPath(path);
+                    path = filterRootPath(path);
                     String tempP = new String(path);
                     path = removeParam(path);
                     String fullPath = rootPath.concat(path);
+                    fullPath = decode(fullPath);
                     PathConfig pathConfig = new PathConfig(fullPath);
-                    Set<String> params = findParamsByPath(tempP);
+                    Map<String, String> params = findParamsByPath(tempP);
                     pathConfig.setParams(params);
                     if (params.size() > 0)
                         pathConfig.setArgs(generateArgs(method));
@@ -114,8 +125,32 @@ public class PathWrapper implements ConfigWrapper {
      * @param path
      * @return
      */
-    public static String removeParam(String path) {
-        return path.replaceAll("\\{[a-zA-Z0-9]+\\}", "([a-zA-Z0-9]+)");
+    public String removeParam(String path) {
+
+        Pattern p = Pattern.compile("\\{[^{]+\\}");
+        Matcher m = p.matcher(path);
+        while (m.find()) {
+            String s = m.group();
+            String[] ss = getParamRegex(s);
+            path = path.replace(s, "(" + ss[1] + ")");
+        }
+        return path;
+    }
+
+    /**
+     * 获取param的regex
+     * 
+     * @param param
+     * @return 如果param不是 xxx:xxx的形式则匹配所有
+     */
+    private String[] getParamRegex(String param) {
+        if (param.matches("\\{[a-zA-Z0-9]+:.+\\}")) {
+            String[] ss = param.split(":");
+            return new String[] { ss[0].substring(1),
+                    ss[1].substring(0, ss[1].length() - 1) };
+        } else {
+            return new String[] { param.substring(1, param.length() - 1), ".*" };
+        }
     }
 
     /**
@@ -124,7 +159,7 @@ public class PathWrapper implements ConfigWrapper {
      * @param path
      * @return 更新后的path
      */
-    private static String filterPath(String path) {
+    private String filterPath(String path) {
         if (path.length() == 0)
             return path;
         if (path.charAt(0) != '/') {
@@ -137,20 +172,20 @@ public class PathWrapper implements ConfigWrapper {
     }
 
     /**
-     * 获取一个方法@Path注解中的参数
+     * 获取一个方法@Path注解中的参数以及它的regex
      * 
      * @param path
-     * @return
+     * @return 参数map @Path("{test:.+}"): map.put("test",".+")
      */
-    private static Set<String> findParamsByPath(String path) {
-        Pattern p = Pattern.compile("\\{.*\\}");
+    private Map<String, String> findParamsByPath(String path) {
+        Pattern p = Pattern.compile("\\{[^{]+\\}");
         Matcher m = p.matcher(path);
-        Set<String> set = new TreeSet<String>();
+        Map<String, String> map = new TreeMap<String, String>();
         while (m.find()) {
-            String param = m.group();
-            set.add(param);
+            String[] result = getParamRegex(m.group());
+            map.put(result[0], result[1]);
         }
-        return set;
+        return map;
     }
 
     /**
@@ -160,35 +195,27 @@ public class PathWrapper implements ConfigWrapper {
      * @return 如果被编码过则返回true 没有则返回false
      * @throws UnsupportedEncodingException
      */
-    private static boolean isEncoded(String oldurl)
+    @SuppressWarnings("unused")
+    private boolean isEncoded(String oldurl)
             throws UnsupportedEncodingException {
         return URLDecoder.decode(oldurl, "UTF-8").equals(oldurl) ? false : true;
     }
 
     /**
-     * 给一个String进行编码
+     * 给一个String进行解码
      * 
      * @param oldurl
      *            需要编码的url
      * @return 编码后的url
      */
-    private static String encode(String oldurl) {
-        try {
-            if (isEncoded(oldurl)) {
-                return oldurl;
-            }
-        } catch (UnsupportedEncodingException e1) {
-            e1.printStackTrace();
-        }
+    private String decode(String oldurl) {
         // Add support for url encoding
         String finalvalue = null;
         try {
             // Use utf-8 for encoding
-            finalvalue = URLEncoder.encode(oldurl, "UTF-8");
+            finalvalue = URLDecoder.decode(oldurl, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
-        } finally {
-            finalvalue = oldurl;
         }
         return finalvalue;
     }
@@ -199,7 +226,7 @@ public class PathWrapper implements ConfigWrapper {
      * @param method
      * @return 配置map
      */
-    private static Map<String, Class<?>> generateArgs(Method method) {
+    private Map<String, Class<?>> generateArgs(Method method) {
         final Annotation[][] paramAnnotations = method
                 .getParameterAnnotations();
         final Class<?>[] paramTypes = method.getParameterTypes();
@@ -207,11 +234,9 @@ public class PathWrapper implements ConfigWrapper {
         for (int i = 0; i < paramAnnotations.length; i++) {
             for (Annotation a : paramAnnotations[i]) {
                 if (a instanceof PathParam) {
-                    // Add support for url encoding
                     String pathvalue = ((PathParam) a).value();
-                    String finalvalue = encode(pathvalue);
                     // Put the encoded string into map
-                    map.put(finalvalue, paramTypes[i]);
+                    map.put(pathvalue, paramTypes[i]);
                 }
             }
         }

@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -45,10 +44,9 @@ public class ResponseGenerator {
                 .entrySet()) {
             Class<?> clazz = entry.getValue();
             String paramName = entry.getKey();
-            Iterator<String> itr = config.getPathConfig().getParams()
-                    .iterator();
-            while (itr.hasNext()) {
-                if (itr.next().contains("{" + paramName + "}")) {
+            for (Entry<String, String> entry2 : config.getPathConfig()
+                    .getParams().entrySet()) {
+                if (entry2.getKey().equals(paramName)) {
                     String paramValue = params[index];
                     Object obj = null;
                     if (clazz == String.class) {
@@ -59,13 +57,6 @@ public class ResponseGenerator {
                     list.add(obj);
                 }
             }
-            /*
-             * if (config.getPathConfig().getParams() .contains("{" + paramName
-             * + "}")) { String paramValue = params[index]; Object obj = null;
-             * if (clazz == String.class) { obj = paramValue; } else if (clazz
-             * == int.class || clazz == Integer.class) { obj =
-             * Integer.parseInt(paramValue); } list.add(obj); }
-             */
             index++;
         }
         return list.toArray();
@@ -77,8 +68,8 @@ public class ResponseGenerator {
             AnnotationConfig config = entry.getKey();
             Matcher m = Pattern.compile(config.getPathConfig().getPath())
                     .matcher(pathInfo);
-            if (!config.getPathConfig().getPath().contains("([a-zA-Z0-9]+)")) {
-                // params.add(config.getPathConfig().getPath());
+            if (pathInfo.contains(config.getPathConfig().getPath())) {
+                params.add(config.getPathConfig().getPath());
                 if (m.matches()) {
                     this.currentRequestConfigEntry = entry;
                     return params.toArray(new String[params.size()]);
@@ -87,14 +78,15 @@ public class ResponseGenerator {
                 }
                 // m.matches()会对m.find()的结果有影响
             } else if (m.find()) {
-                for (int i = 1; i <= m.groupCount()
-                        && config.getHttpTypeConfig().getHttpType().toString()
-                                .equals(httpMethod); i++) {
-                    this.currentRequestConfigEntry = entry;
-                    params.add(m.group(i));
+                if (pathInfo.matches(config.getPathConfig().getPath())) {
+                    for (int i = 1; i <= m.groupCount()
+                            && config.getHttpTypeConfig().getHttpType()
+                                    .toString().equals(httpMethod); i++) {
+                        this.currentRequestConfigEntry = entry;
+                        params.add(m.group(i));
+                    }
+                    return params.toArray(new String[params.size()]);
                 }
-                return params.toArray(new String[params.size()]);
-
             } else {
                 continue;
             }
@@ -105,7 +97,8 @@ public class ResponseGenerator {
 
     private String getPathInfo(HttpServletRequest request) {
         // Get the encoded url
-        String pathInfo = request.getRequestURI();
+        String pathInfo = request.getPathInfo();
+
         if (pathInfo.endsWith("/")) {
             pathInfo = pathInfo.substring(0, pathInfo.length() - 1);
         }
