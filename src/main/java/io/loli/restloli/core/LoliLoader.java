@@ -22,7 +22,7 @@ public class LoliLoader {
      * 从包package中获取所有的Class
      * 
      * @param pack
-     * @return
+     * @return 所有Class的集合
      */
     public static Set<Class<?>> getClasses(String pack) {
 
@@ -117,13 +117,9 @@ public class LoliLoader {
         return classes;
     }
 
-    /**
+    /*
      * 以文件的形式来获取包下的所有Class
      * 
-     * @param packageName
-     * @param packagePath
-     * @param recursive
-     * @param classes
      */
     public static void findAndAddClassesInPackageByFile(String packageName,
             String packagePath, final boolean recursive, Set<Class<?>> classes) {

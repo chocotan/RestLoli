@@ -77,7 +77,7 @@ public class PathWrapper implements ConfigWrapper {
      * 更新配置map
      * 
      * @param configMap
-     * @return
+     * @return 更新后的map
      */
     @Override
     public Map<? extends AnnotationConfig, ? extends Method> wrap(
@@ -122,8 +122,7 @@ public class PathWrapper implements ConfigWrapper {
     /**
      * 去除带{}的参数并用正则表达式替代
      * 
-     * @param path
-     * @return
+     * @return 处理后的path
      */
     public String removeParam(String path) {
 
@@ -140,7 +139,6 @@ public class PathWrapper implements ConfigWrapper {
     /**
      * 获取param的regex
      * 
-     * @param param
      * @return 如果param不是 xxx:xxx的形式则匹配所有
      */
     private String[] getParamRegex(String param) {
@@ -156,7 +154,6 @@ public class PathWrapper implements ConfigWrapper {
     /**
      * 给path开头增加"/",结尾删除"/"
      * 
-     * @param path
      * @return 更新后的path
      */
     private String filterPath(String path) {
@@ -174,7 +171,6 @@ public class PathWrapper implements ConfigWrapper {
     /**
      * 获取一个方法@Path注解中的参数以及它的regex
      * 
-     * @param path
      * @return 参数map @Path("{test:.+}"): map.put("test",".+")
      */
     private Map<String, String> findParamsByPath(String path) {

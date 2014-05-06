@@ -30,12 +30,9 @@ public class LoliConfig {
         this.packageName = packageName;
     }
 
-    /**
+    /*
      * 加载config
      * 
-     * @param config
-     * @throws InitConfigException
-     *             当没有获取到正确的参数时, 会抛出异常
      */
     public void loadConfig(ServletConfig config) {
         packageName = config
