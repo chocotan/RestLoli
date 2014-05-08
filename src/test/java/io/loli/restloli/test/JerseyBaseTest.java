@@ -47,6 +47,13 @@ public class JerseyBaseTest {
         reg.addMapping("/*");
         reg.setInitParameter("io.loli.restloli.core.init.PackageName",
                 "io.loli.restloli.test.web");
+        // 不加这个则会在每个name前面加上@
+        reg.setInitParameter("com.sun.jersey.api.json.POJOMappingFeature",
+                "true");
+        ctx.addContextInitParameter("contextConfigLocation",
+                "classpath:applicationContext.xml");
+        ctx.addListener("io.loli.restloli.spring.SpringContextLoaderListener");
+        ctx.addListener("org.springframework.web.context.request.RequestContextListener");
         ctx.deploy(server);
         server.start();
     }

@@ -1,5 +1,6 @@
 package io.loli.restloli.core.servlet.response;
 
+import io.loli.restloli.core.ContextBeanFactory;
 import io.loli.restloli.core.servlet.LoliConfig;
 import io.loli.restloli.core.servlet.config.AnnotationConfig;
 
@@ -108,10 +109,11 @@ public class ResponseGenerator {
     private Object invokeMethod(Method method, Object[] args) {
         Object responseObj = null;
         try {
-            responseObj = method.invoke(method.getDeclaringClass()
-                    .newInstance(), args);
+            responseObj = method.invoke(
+                    ContextBeanFactory.getBean(method.getDeclaringClass()),
+                    args);
         } catch (IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException | InstantiationException e) {
+                | InvocationTargetException e) {
             e.printStackTrace();
         }
         return responseObj;
